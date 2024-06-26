@@ -1,7 +1,7 @@
-package tdd.cleanarchitecture.firstcomefirstserve.controller.exception;
+package tdd.cleanarchitecture.firstcomefirstserve.common.controller.exception;
 
 import lombok.Getter;
-import tdd.cleanarchitecture.firstcomefirstserve.controller.ErrorCode;
+import tdd.cleanarchitecture.firstcomefirstserve.common.controller.ErrorCode;
 
 @Getter
 public class BaseException extends RuntimeException {

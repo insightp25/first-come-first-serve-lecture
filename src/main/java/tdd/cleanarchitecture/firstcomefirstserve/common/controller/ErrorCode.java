@@ -1,4 +1,4 @@
-package tdd.cleanarchitecture.firstcomefirstserve.controller;
+package tdd.cleanarchitecture.firstcomefirstserve.common.controller;
 
 import lombok.Getter;
 

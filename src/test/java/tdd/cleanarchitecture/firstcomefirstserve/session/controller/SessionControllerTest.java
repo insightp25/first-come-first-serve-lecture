@@ -1,4 +1,4 @@
-package tdd.cleanarchitecture.firstcomefirstserve.controller;
+package tdd.cleanarchitecture.firstcomefirstserve.session.controller;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -20,11 +20,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import tdd.cleanarchitecture.firstcomefirstserve.controller.port.SessionService;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.Session;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.SessionApplicationHistory;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.exception.SessionUnavailableException;
-import tdd.cleanarchitecture.firstcomefirstserve.service.SessionServiceImpl;
+import tdd.cleanarchitecture.firstcomefirstserve.session.controller.port.SessionApplicationHistoryService;
+import tdd.cleanarchitecture.firstcomefirstserve.session.controller.port.SessionService;
+import tdd.cleanarchitecture.firstcomefirstserve.session.domain.Session;
+import tdd.cleanarchitecture.firstcomefirstserve.session.domain.SessionApplicationHistory;
+import tdd.cleanarchitecture.firstcomefirstserve.common.domain.exception.SessionUnavailableException;
 
 @WebMvcTest(SessionController.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -38,6 +38,9 @@ class SessionControllerTest {
 
     @MockBean
     private SessionService sessionService;
+
+    @MockBean
+    private SessionApplicationHistoryService sessionApplicationHistoryService;
 
     @Test
     public void 특강이_신청기간_내이고_잔여_정원이_남아있을시_특정_유저가_수강신청을_하면_수강등록_후_강의정보를_반환한다() throws Exception {
@@ -69,7 +72,7 @@ class SessionControllerTest {
     public void 신청_가능한_특강_목록을_조회할_수_있다() throws Exception {
         // given
         List<Session> sessions = new ArrayList<>(List.of(Session.builder().build()));
-        given(sessionService.searchAvailable()).willReturn(sessions);
+        given(sessionService.searchAllAvailable()).willReturn(sessions);
 
         // when & then
         MvcResult mvcResult = mockMvc.perform(get("/sessions")
@@ -89,7 +92,8 @@ class SessionControllerTest {
         // given
         List<SessionApplicationHistory> sessionApplicationHistory =
             new ArrayList<>(List.of(SessionApplicationHistory.builder().build()));
-        given(sessionService.searchApplicationHistory()).willReturn(sessionApplicationHistory);
+        given(sessionApplicationHistoryService.searchSessionApplicationHistory(anyLong()))
+            .willReturn(sessionApplicationHistory);
 
         // when & then
         MvcResult mvcResult = mockMvc.perform(get("/sessions/application/{userId}", 999L)

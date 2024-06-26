@@ -1,0 +1,8 @@
+package tdd.cleanarchitecture.firstcomefirstserve.session.infrastructure.session_application_history;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tdd.cleanarchitecture.firstcomefirstserve.session.domain.SessionApplicationHistoryKey;
+
+public interface SessionApplicationHistoryJpaRepository extends JpaRepository<SessionApplcationHistoryEntity, SessionApplicationHistoryKey> {
+
+}

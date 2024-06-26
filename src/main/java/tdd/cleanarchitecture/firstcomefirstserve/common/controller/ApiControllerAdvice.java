@@ -1,12 +1,12 @@
-package tdd.cleanarchitecture.firstcomefirstserve.controller;
+package tdd.cleanarchitecture.firstcomefirstserve.common.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import tdd.cleanarchitecture.firstcomefirstserve.controller.exception.BaseException;
-import tdd.cleanarchitecture.firstcomefirstserve.controller.response.ErrorResponse;
+import tdd.cleanarchitecture.firstcomefirstserve.common.controller.exception.BaseException;
+import tdd.cleanarchitecture.firstcomefirstserve.common.controller.response.ErrorResponse;
 
 @Slf4j
 @RestControllerAdvice

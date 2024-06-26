@@ -1,4 +1,4 @@
-package tdd.cleanarchitecture.firstcomefirstserve.controller;
+package tdd.cleanarchitecture.firstcomefirstserve.session.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import tdd.cleanarchitecture.firstcomefirstserve.controller.port.SessionService;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.Session;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.SessionApplicationHistory;
+import tdd.cleanarchitecture.firstcomefirstserve.session.controller.port.SessionApplicationHistoryService;
+import tdd.cleanarchitecture.firstcomefirstserve.session.controller.port.SessionService;
+import tdd.cleanarchitecture.firstcomefirstserve.session.domain.Session;
+import tdd.cleanarchitecture.firstcomefirstserve.session.domain.SessionApplicationHistory;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +20,8 @@ import tdd.cleanarchitecture.firstcomefirstserve.domain.SessionApplicationHistor
 public class SessionController {
 
     private final SessionService sessionService;
+
+    private final SessionApplicationHistoryService sessionApplicationHistoryService;
 
     @PostMapping("/{session_id}/application")
     public ResponseEntity<Session> application(
@@ -34,14 +37,15 @@ public class SessionController {
     public ResponseEntity<List<Session>> availableSessions() {
         return ResponseEntity
             .ok()
-            .body(sessionService.searchAvailable());
+            .body(sessionService.searchAllAvailable());
     }
 
-    @GetMapping("/application/{userId}")
-    public ResponseEntity<List<SessionApplicationHistory>> registeredSessions() {
+    @GetMapping("/application/{user_id}")
+    public ResponseEntity<List<SessionApplicationHistory>> registeredSessions(
+        @PathVariable(value = "user_id") long userId
+    ) {
         return ResponseEntity
             .ok()
-            .body(sessionService.searchApplicationHistory());
+            .body(sessionApplicationHistoryService.searchSessionApplicationHistory(userId));
     }
 }
-
