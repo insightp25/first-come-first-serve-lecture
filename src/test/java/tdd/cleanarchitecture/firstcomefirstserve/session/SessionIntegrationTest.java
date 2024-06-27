@@ -254,12 +254,6 @@ public class SessionIntegrationTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andReturn();
-
-//        String contentAsString = mvcResult.getResponse().getContentAsString();
-//        List<SessionApplicationHistory> result = objectMapper.readValue(contentAsString, new TypeReference<>() {});
-//
-//        Assertions.assertThat(result)
-//            .isEqualTo(new ArrayList<>(List.of(SessionApplicationHistory.builder().build())));
     }
 
 }
