@@ -1,5 +1,6 @@
 package tdd.cleanarchitecture.firstcomefirstserve.session.infrastructure.session;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,24 +10,33 @@ import tdd.cleanarchitecture.firstcomefirstserve.session.domain.Session;
 
 @Entity
 public class SessionEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @Column(name = "host_name", nullable = false)
     String hostName;
 
+    @Column(name = "title", nullable = false)
     String title;
 
+    @Column(name = "content", nullable = false)
     String content;
 
+    @Column(name = "capacity", nullable = false)
     Integer capacity;
 
-    LocalDateTime held_at;
+    @Column(name = "held_at", nullable = false)
+    LocalDateTime heldAt;
 
+    @Column(name = "num_registered_applicants", nullable = false)
     Integer numRegisteredApplicants;
 
+    @Column(name = "is_closed", nullable = false)
     Boolean isClosed;
 
+    @Column(name = "created_at", nullable = false)
     LocalDateTime createdAt;
 
     public static SessionEntity from(Session session) {
@@ -36,7 +46,7 @@ public class SessionEntity {
         sessionEntity.title = session.title();
         sessionEntity.content = session.content();
         sessionEntity.capacity = session.capacity();
-        sessionEntity.held_at = session.heldAt();
+        sessionEntity.heldAt = session.heldAt();
         sessionEntity.numRegisteredApplicants = session.numRegisteredApplicants();
         sessionEntity.isClosed = session.isClosed();
         sessionEntity.createdAt = session.createdAt();
@@ -45,6 +55,15 @@ public class SessionEntity {
 
     public Session toModel() {
         return Session.builder()
+            .id(id)
+            .hostName(hostName)
+            .title(title)
+            .content(content)
+            .capacity(capacity)
+            .heldAt(heldAt)
+            .numRegisteredApplicants(numRegisteredApplicants)
+            .isClosed(isClosed)
+            .createdAt(createdAt)
             .build();
     }
 }

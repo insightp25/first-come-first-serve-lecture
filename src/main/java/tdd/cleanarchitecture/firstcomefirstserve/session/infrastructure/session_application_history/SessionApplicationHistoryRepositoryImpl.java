@@ -14,11 +14,15 @@ public class SessionApplicationHistoryRepositoryImpl implements
     private final SessionApplicationHistoryJpaRepository sessionApplicationHistoryJpaRepository;
 
     @Override
-    public List<SessionApplicationHistory> findAllByUserId(Long userId) {
-        return null;
+    public List<SessionApplicationHistory> findByUserId(Long userId) {
+        return sessionApplicationHistoryJpaRepository.findByIdUserId(userId).stream()
+            .map(SessionApplicationHistoryEntity::toModel)
+            .toList();
     }
 
     @Override
     public void save(SessionApplicationHistory sessionApplicationHistory) {
+        sessionApplicationHistoryJpaRepository.save(SessionApplicationHistoryEntity
+            .from(sessionApplicationHistory));
     }
 }

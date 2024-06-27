@@ -5,8 +5,7 @@ import java.time.temporal.ChronoUnit;
 import lombok.Builder;
 
 public record SessionApplicationHistory(
-    long sessionId,
-    long userId,
+    SessionApplicationHistoryId sessionApplicationHistoryId,
     boolean isRegistered,
     LocalDateTime createdAt
 ) {
@@ -15,10 +14,11 @@ public record SessionApplicationHistory(
     public SessionApplicationHistory{
     }
 
-    public SessionApplicationHistory create(boolean isRegistered) {
+    public SessionApplicationHistory create(
+        boolean isRegistered
+    ) {
         return SessionApplicationHistory.builder()
-            .sessionId(sessionId)
-            .userId(userId)
+            .sessionApplicationHistoryId(sessionApplicationHistoryId)
             .isRegistered(isRegistered)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build();

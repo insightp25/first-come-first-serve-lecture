@@ -15,6 +15,6 @@ public class SessionApplicationHistoryServiceImpl implements SessionApplicationH
 
     @Override
     public List<SessionApplicationHistory> searchSessionApplicationHistory(long userId) {
-        return sessionApplicationHistoryRepository.findAllByUserId(userId);
+        return sessionApplicationHistoryRepository.findByUserId(userId);
     }
 }

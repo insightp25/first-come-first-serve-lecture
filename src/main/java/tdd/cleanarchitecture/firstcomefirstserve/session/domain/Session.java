@@ -19,15 +19,16 @@ public record Session (
     public Session {
     }
 
-    public Session update() {
+    public Session update(
+    ) {
         return Session.builder()
             .id(id)
             .hostName(hostName)
             .title(title)
             .content(content)
-            .capacity(capacity)
-            .heldAt(heldAt)
-            .numRegisteredApplicants(numRegisteredApplicants + 1)
+            .capacity(capacity) // 분리
+            .heldAt(heldAt) // 분리
+            .numRegisteredApplicants(numRegisteredApplicants + 1) // 분리
             .isClosed(isClosed)
             .createdAt(createdAt)
             .build();

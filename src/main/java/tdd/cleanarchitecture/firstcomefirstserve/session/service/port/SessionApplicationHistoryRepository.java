@@ -5,7 +5,7 @@ import tdd.cleanarchitecture.firstcomefirstserve.session.domain.SessionApplicati
 
 public interface SessionApplicationHistoryRepository {
 
-    List<SessionApplicationHistory> findAllByUserId(Long userId);
+    List<SessionApplicationHistory> findByUserId(Long userId);
 
     void save(SessionApplicationHistory sessionApplicationHistory);
 }

@@ -29,7 +29,7 @@ public class SessionApplicationHistoryServiceImplTest {
     @Test
     public void 특정_유저의_특강_신청_결과_목록을_조회할_수_있다() {
         // given
-        given(sessionApplicationHistoryRepository.findAllByUserId(anyLong()))
+        given(sessionApplicationHistoryRepository.findByUserId(anyLong()))
             .willReturn(new ArrayList<>(List.of(SessionApplicationHistory.builder().build())));
 
         // when
