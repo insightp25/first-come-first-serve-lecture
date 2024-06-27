@@ -1,11 +1,3 @@
-# TDD와 클린 아키텍처로 구현한 선착순 특강 신청 서비스
-
-### ERD 및 SQL 스크립트(MySQL InnoDB) - STEP03
-
-![step03](./hhbp03.png)
-
-```sql
-# version: step03
 CREATE TABLE `session` (
   `id` bigint PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `host_name` varchar(255) NOT NULL,
@@ -34,4 +26,3 @@ CREATE TABLE `user` (
   `id` bigint PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NOT NULL
 ) ENGINE=InnoDB;
-```
