@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -18,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.annotation.DirtiesContext;
+import tdd.cleanarchitecture.firstcomefirstserve.common.domain.exception.SessionNotFoundException;
 import tdd.cleanarchitecture.firstcomefirstserve.common.domain.exception.SessionUnavailableException;
 import tdd.cleanarchitecture.firstcomefirstserve.session.domain.Session;
 import tdd.cleanarchitecture.firstcomefirstserve.session.service.port.SessionApplicationHistoryRepository;
@@ -61,7 +62,7 @@ class SessionServiceImplTest {
         // when & then
         Assertions.assertThatThrownBy(() -> {
             sessionServiceImpl.apply(999L, 999L);
-        }).isInstanceOf(NoSuchElementException.class);
+        }).isInstanceOf(SessionNotFoundException.class);
     }
 
     @Test
@@ -112,5 +113,29 @@ class SessionServiceImplTest {
             .capacity(30)
             .numRegisteredApplicants(0)
             .build())));
+    }
+
+    @Test
+    @DirtiesContext
+    public void 특정_유저로부터_동시에_들어오는_포인트_업데이트_요청을_누락없이_모두_처리할_수_있다() {
+//        // given
+//        pointService.charge(7L, 10_000L);
+//
+//        // when
+//        CompletableFuture.allOf(
+//            CompletableFuture.runAsync(() -> {
+//                pointService.use(7L, 3_000L);
+//            }),
+//            CompletableFuture.runAsync(() -> {
+//                pointService.charge(7L, 5_000L);
+//            }),
+//            CompletableFuture.runAsync(() -> {
+//                pointService.use(7L, 7_000L);
+//            })
+//        ).join();
+//
+//        // then
+//        UserPoint userPoint = pointService.getByUserId(7L);
+//        assertThat(userPoint.point()).isEqualTo(10_000L - 3_000L + 5_000L - 7_000L);
     }
 }

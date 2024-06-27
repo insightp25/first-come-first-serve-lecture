@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import tdd.cleanarchitecture.firstcomefirstserve.common.domain.exception.SessionNotFoundException;
 import tdd.cleanarchitecture.firstcomefirstserve.session.controller.port.SessionService;
 import tdd.cleanarchitecture.firstcomefirstserve.session.domain.Session;
 import tdd.cleanarchitecture.firstcomefirstserve.session.domain.SessionApplicationHistory;
@@ -16,6 +17,7 @@ import tdd.cleanarchitecture.firstcomefirstserve.session.service.port.SessionApp
 import tdd.cleanarchitecture.firstcomefirstserve.session.service.port.SessionRepository;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class SessionServiceImpl implements SessionService {
 
@@ -25,14 +27,19 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public Session apply(Long userId, Long sessionId) {
         // session 이 없을 때 예외 던지는 건 중요하다. 왜냐하면 아닌 사람이 session 을 생성할 수 있게 되기 때문에
-        Session session = sessionRepository.findById(sessionId).orElseThrow(); // 세션 정보를 찾는다
+        Session session = sessionRepository.findById(sessionId)
+            .orElseThrow(SessionNotFoundException::new); // 세션 정보를 찾는다
 
+        // get session 이라는 api 에서 sessionApplicationHistoryRepository 에서 userId와 sessionId를 조회해 등록 이력 확인 가정
         if (session.numRegisteredApplicants() < session.capacity() && // 정원이 잔여석이 있고
-            LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).isBefore(session.heldAt())) { // 신청기간이 만료되지 않은 경우
+            LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).isBefore(session.heldAt()) // 신청기간이 만료되지 않은 경우
+        ) {
             createSessionApplicationHistory(userId, sessionId, true);
+
             return sessionRepository.save(session.update());
         } else {
             createSessionApplicationHistory(userId, sessionId, false);
+
             throw new SessionUnavailableException();
         }
     }

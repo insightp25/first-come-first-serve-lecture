@@ -7,5 +7,4 @@ public interface SessionApplicationHistoryJpaRepository extends
     JpaRepository<SessionApplicationHistoryEntity, SessionApplicationHistoryIdEntity> {
 
     List<SessionApplicationHistoryEntity> findByIdUserId(Long userId);
-
 }
