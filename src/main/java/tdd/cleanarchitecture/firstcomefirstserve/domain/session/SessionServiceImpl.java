@@ -14,7 +14,7 @@ import tdd.cleanarchitecture.firstcomefirstserve.domain.session.port.SessionRepo
 import tdd.cleanarchitecture.firstcomefirstserve.domain.user.port.UserRepository;
 
 @Service
-@Transactional // 확인 필요
+@Transactional
 @RequiredArgsConstructor
 public class SessionServiceImpl implements SessionService {
 
