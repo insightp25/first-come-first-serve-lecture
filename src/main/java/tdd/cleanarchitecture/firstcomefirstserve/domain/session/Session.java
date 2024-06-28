@@ -1,20 +1,17 @@
 package tdd.cleanarchitecture.firstcomefirstserve.domain.session;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import lombok.Builder;
+import tdd.cleanarchitecture.firstcomefirstserve.domain.session.exception.SessionUnavailableException;
 
 public record Session (
     long id,
-    String hostName,
-    String title,
-    String content,
-    int capacity,
-    LocalDateTime heldAt,
+    LocalDateTime startsAt,
     int numRegisteredApplicants,
-    boolean isClosed,
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+    Lecture lecture
 ) {
-
     @Builder
     public Session {
     }
@@ -23,14 +20,19 @@ public record Session (
     ) {
         return Session.builder()
             .id(id)
-            .hostName(hostName)
-            .title(title)
-            .content(content)
-            .capacity(capacity) // 분리
-            .heldAt(heldAt) // 분리
-            .numRegisteredApplicants(numRegisteredApplicants + 1) // 분리
-            .isClosed(isClosed)
+            .startsAt(startsAt)
+            .numRegisteredApplicants(numRegisteredApplicants + 1)
             .createdAt(createdAt)
+            .lecture(lecture)
             .build();
+    }
+
+    public boolean checkSessionIfAvailable() {
+        if (!(this.numRegisteredApplicants() < this.lecture().capacity() &&
+            LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).isBefore(this.startsAt()))
+        ) {
+            throw new SessionUnavailableException();
+        }
+        return true;
     }
 }

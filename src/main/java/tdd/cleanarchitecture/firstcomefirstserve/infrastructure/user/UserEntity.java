@@ -5,8 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import tdd.cleanarchitecture.firstcomefirstserve.domain.user.User;
+import tdd.cleanarchitecture.firstcomefirstserve.infrastructure.session.UserSessionEntity;
 
 @Entity
 public class UserEntity {
@@ -17,6 +21,9 @@ public class UserEntity {
 
     @Column(name = "created_at", nullable = false)
     LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "userEntity")
+    List<UserSessionEntity> userSessionEntities = new ArrayList<>();
 
     public static UserEntity from(User user) {
         UserEntity userEntity = new UserEntity();

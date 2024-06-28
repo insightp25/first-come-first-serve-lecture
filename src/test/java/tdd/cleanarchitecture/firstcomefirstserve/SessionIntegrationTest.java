@@ -21,10 +21,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import tdd.cleanarchitecture.firstcomefirstserve.domain.session.Lecture;
 import tdd.cleanarchitecture.firstcomefirstserve.domain.session.Session;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.session.SessionApplicationHistory;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.session.SessionApplicationHistoryId;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.session.port.SessionApplicationHistoryRepository;
+import tdd.cleanarchitecture.firstcomefirstserve.domain.session.UserSession;
+import tdd.cleanarchitecture.firstcomefirstserve.domain.session.UserSessionId;
+import tdd.cleanarchitecture.firstcomefirstserve.domain.session.port.UserSessionRepository;
 import tdd.cleanarchitecture.firstcomefirstserve.domain.session.port.SessionRepository;
 import tdd.cleanarchitecture.firstcomefirstserve.domain.user.User;
 import tdd.cleanarchitecture.firstcomefirstserve.domain.user.port.UserRepository;
@@ -49,7 +50,7 @@ public class SessionIntegrationTest {
     private SessionRepository sessionRepository;
 
     @Autowired
-    private SessionApplicationHistoryRepository sessionApplicationHistoryRepository;
+    private UserSessionRepository userSessionRepository;
 
     @Autowired
     private PlatformTransactionManager transactionManager;
@@ -75,13 +76,14 @@ public class SessionIntegrationTest {
             .build());
 
         Session session = sessionRepository.save(Session.builder()
-            .hostName("John Doe")
-            .title("Introduction to Spring Framework")
-            .content("This is a special lecture introducing Spring Framework")
+            .lecture(Lecture.builder()
+                .hostName("John Doe")
+                .title("Introduction to Spring Framework")
+                .content("This is a special lecture introducing Spring Framework")
+                .capacity(MAX_CAPACITY)
+                .build())
             .numRegisteredApplicants(0)
-            .capacity(MAX_CAPACITY)
-            .heldAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
-            .isClosed(false)
+            .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
 
@@ -102,13 +104,14 @@ public class SessionIntegrationTest {
             .build());
 
         Session session = sessionRepository.save(Session.builder()
-            .hostName("John Doe")
-            .title("Introduction to Spring Framework")
-            .content("This is a special lecture introducing Spring Framework")
+            .lecture(Lecture.builder()
+                .hostName("John Doe")
+                .title("Introduction to Spring Framework")
+                .content("This is a special lecture introducing Spring Framework")
+                .capacity(MAX_CAPACITY)
+                .build())
             .numRegisteredApplicants(MAX_CAPACITY)
-            .capacity(MAX_CAPACITY)
-            .heldAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
-            .isClosed(true)
+            .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
 
@@ -128,13 +131,14 @@ public class SessionIntegrationTest {
             .build());
 
         Session session = sessionRepository.save(Session.builder()
-            .hostName("John Doe")
-            .title("Introduction to Spring Framework")
-            .content("This is a special lecture introducing Spring Framework")
+            .lecture(Lecture.builder()
+                .hostName("John Doe")
+                .title("Introduction to Spring Framework")
+                .content("This is a special lecture introducing Spring Framework")
+                .capacity(MAX_CAPACITY)
+                .build())
             .numRegisteredApplicants(0)
-            .capacity(MAX_CAPACITY)
-            .heldAt(LocalDateTime.MIN.truncatedTo(ChronoUnit.SECONDS))
-            .isClosed(true)
+            .startsAt(LocalDateTime.MIN.truncatedTo(ChronoUnit.SECONDS))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
 
@@ -154,42 +158,40 @@ public class SessionIntegrationTest {
             .build());
 
         Session session1 = sessionRepository.save(Session.builder()
-            .hostName("John Doe")
-            .title("Introduction to Spring Framework")
-            .content("This is a special lecture introducing Spring Framework")
+            .lecture(Lecture.builder()
+                .hostName("John Doe")
+                .title("Introduction to Spring Framework")
+                .content("This is a special lecture introducing Spring Framework")
+                .capacity(MAX_CAPACITY)
+                .build())
             .numRegisteredApplicants(0)
-            .capacity(MAX_CAPACITY)
-            .heldAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
-            .isClosed(false)
+            .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
 
         Session session2 = sessionRepository.save(Session.builder()
-            .hostName("John Doe")
-            .title("Introduction to FastAPI Framework")
-            .content("This is a special lecture introducing FastAPI Framework")
+            .lecture(Lecture.builder()
+                .hostName("John Doe")
+                .title("Introduction to Spring Framework")
+                .content("This is a special lecture introducing Spring Framework")
+                .capacity(MAX_CAPACITY)
+                .build())
             .numRegisteredApplicants(MAX_CAPACITY)
-            .capacity(MAX_CAPACITY)
-            .heldAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
-            .isClosed(true)
+            .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
 
-        sessionApplicationHistoryRepository.save(SessionApplicationHistory.builder()
-            .sessionApplicationHistoryId(SessionApplicationHistoryId.builder()
-                .sessionId(session1.id())
-                .userId(user.id())
-                .build())
+        userSessionRepository.save(UserSession.builder()
+            .user(user)
+            .session(session1)
             .isRegistered(true)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build());
 
-        sessionApplicationHistoryRepository.save(SessionApplicationHistory.builder()
-            .sessionApplicationHistoryId(SessionApplicationHistoryId.builder()
-                .sessionId(session2.id())
-                .userId(user.id())
-                .build())
-            .isRegistered(false)
+        userSessionRepository.save(UserSession.builder()
+            .user(user)
+            .session(session2)
+            .isRegistered(true)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build());
 
@@ -209,42 +211,40 @@ public class SessionIntegrationTest {
             .build());
 
         Session session1 = sessionRepository.save(Session.builder()
-            .hostName("John Doe")
-            .title("Introduction to Spring Framework")
-            .content("This is a special lecture introducing Spring Framework")
+            .lecture(Lecture.builder()
+                .hostName("John Doe")
+                .title("Introduction to Spring Framework")
+                .content("This is a special lecture introducing Spring Framework")
+                .capacity(MAX_CAPACITY)
+                .build())
             .numRegisteredApplicants(0)
-            .capacity(MAX_CAPACITY)
-            .heldAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
-            .isClosed(false)
+            .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
 
         Session session2 = sessionRepository.save(Session.builder()
-            .hostName("John Doe")
-            .title("Introduction to FastAPI Framework")
-            .content("This is a special lecture introducing FastAPI Framework")
+            .lecture(Lecture.builder()
+                .hostName("John Doe")
+                .title("Introduction to Spring Framework")
+                .content("This is a special lecture introducing Spring Framework")
+                .capacity(MAX_CAPACITY)
+                .build())
             .numRegisteredApplicants(MAX_CAPACITY)
-            .capacity(MAX_CAPACITY)
-            .heldAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
-            .isClosed(true)
+            .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
 
-        sessionApplicationHistoryRepository.save(SessionApplicationHistory.builder()
-            .sessionApplicationHistoryId(SessionApplicationHistoryId.builder()
-                .sessionId(session1.id())
-                .userId(user.id())
-                .build())
+        userSessionRepository.save(UserSession.builder()
+            .user(user)
+            .session(session1)
             .isRegistered(true)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build());
 
-        sessionApplicationHistoryRepository.save(SessionApplicationHistory.builder()
-            .sessionApplicationHistoryId(SessionApplicationHistoryId.builder()
-                .sessionId(session2.id())
-                .userId(user.id())
-                .build())
-            .isRegistered(false)
+        userSessionRepository.save(UserSession.builder()
+            .user(user)
+            .session(session2)
+            .isRegistered(true)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build());
 
