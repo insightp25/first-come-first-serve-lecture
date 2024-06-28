@@ -25,7 +25,7 @@ public class SessionServiceImpl implements SessionService {
 
         Session session = sessionRepository.findByIdLocked(sessionId)
             .orElseThrow(SessionNotFoundException::new);
-        System.out.println("-------------------------------> check for: userId=" + userId + ", sessionId=" + sessionId);
+        System.out.println("* Check for: userId=" + userId + ", sessionId=" + sessionId + "-----------------------------------------------");
 
         boolean isAvailableSession = session.validateIfAvailable();
 

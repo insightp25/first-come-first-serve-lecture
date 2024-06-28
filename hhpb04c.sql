@@ -17,7 +17,7 @@ CREATE TABLE `session` (
   INDEX `idx_session_created_at` (`created_at` DESC)
 ) ENGINE=InnoDB;
 
-CREATE TABLE `session_application_history` (
+CREATE TABLE `user_session` (
   `session_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
   `is_registered` tinyint(1) NOT NULL,
@@ -25,9 +25,9 @@ CREATE TABLE `session_application_history` (
   PRIMARY KEY (`session_id`, `user_id`),
   FOREIGN KEY (`session_id`) REFERENCES `session` (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-  INDEX `idx_session_application_history_session_id` (`session_id`),
-  INDEX `idx_session_application_history_user_id` (`user_id`),
-  INDEX `idx_session_application_history_created_at` (`created_at` DESC)  
+  INDEX `idx_user_session_session_id` (`session_id`),
+  INDEX `idx_user_session_user_id` (`user_id`),
+  INDEX `idx_user_session_created_at` (`created_at` DESC)  
 ) ENGINE=InnoDB;
 
 CREATE TABLE `user` (
