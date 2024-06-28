@@ -6,7 +6,7 @@ import tdd.cleanarchitecture.firstcomefirstserve.domain.session.Session;
 
 public interface SessionRepository {
 
-    Optional<Session> findById(Long sessionId);
+    Optional<Session> findByIdLocked(Long sessionId);
 
     Session save(Session session);
 

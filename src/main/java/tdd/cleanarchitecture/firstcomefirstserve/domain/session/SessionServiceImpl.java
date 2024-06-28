@@ -22,10 +22,10 @@ public class SessionServiceImpl implements SessionService {
     private final UserSessionRepository userSessionRepository;
     private final UserRepository userRepository;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE) // 확인 필요
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Session register(Long userId, Long sessionId) {
 
-        Session session = sessionRepository.findById(sessionId)
+        Session session = sessionRepository.findByIdLocked(sessionId)
             .orElseThrow(SessionNotFoundException::new);
 
         boolean isAvailableSession = session.validateIfAvailable();
