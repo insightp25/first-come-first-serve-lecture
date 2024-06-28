@@ -2,8 +2,9 @@ package tdd.cleanarchitecture.firstcomefirstserve.infrastructure.session;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
@@ -11,15 +12,16 @@ import tdd.cleanarchitecture.firstcomefirstserve.domain.session.UserSession;
 import tdd.cleanarchitecture.firstcomefirstserve.infrastructure.user.UserEntity;
 
 @Entity
-@IdClass(UserSessionEntityId.class)
 public class UserSessionEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
     @ManyToOne
     @JoinColumn(name = "session_id", nullable = false)
     SessionEntity sessionEntity;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     UserEntity userEntity;

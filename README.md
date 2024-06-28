@@ -5,7 +5,7 @@
 ![step04](./hhpb04b.png)
 
 ```sql
-# version: step03
+# version: step04
 CREATE TABLE `lecture` (
   `id` bigint PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `host_name` varchar(255) NOT NULL,

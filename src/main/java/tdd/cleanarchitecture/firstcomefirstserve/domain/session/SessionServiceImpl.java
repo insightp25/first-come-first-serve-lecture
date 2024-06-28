@@ -28,7 +28,7 @@ public class SessionServiceImpl implements SessionService {
         Session session = sessionRepository.findById(sessionId)
             .orElseThrow(SessionNotFoundException::new);
 
-        boolean isAvailableSession = session.checkSessionIfAvailable();
+        boolean isAvailableSession = session.validateIfAvailable();
 
         System.out.println("check");
 
@@ -44,7 +44,7 @@ public class SessionServiceImpl implements SessionService {
 
     public List<Session> searchAllAvailable() {
         return sessionRepository.getAll().stream()
-            .filter(Session::checkSessionIfAvailable)
+            .filter(Session::isAvailable)
             .toList();
     }
 }

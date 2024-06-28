@@ -8,14 +8,14 @@ import tdd.cleanarchitecture.firstcomefirstserve.domain.session.port.UserSession
 
 @Repository
 @RequiredArgsConstructor
-public class UserUserSessionRepositoryImpl implements
+public class UserSessionRepositoryImpl implements
     UserSessionRepository {
 
     private final UserSessionJpaRepository userSessionJpaRepository;
 
     @Override
     public List<UserSession> findByUserId(Long userId) {
-        return userSessionJpaRepository.findByIdUserId(userId).stream()
+        return userSessionJpaRepository.findByIdUserEntityId(userId).stream()
             .map(UserSessionEntity::toModel)
             .toList();
     }

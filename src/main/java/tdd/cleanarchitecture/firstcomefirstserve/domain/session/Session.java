@@ -27,12 +27,17 @@ public record Session (
             .build();
     }
 
-    public boolean checkSessionIfAvailable() {
+    public boolean validateIfAvailable() {
         if (!(this.numRegisteredApplicants() < this.lecture().capacity() &&
             LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).isBefore(this.startsAt()))
         ) {
             throw new SessionUnavailableException();
         }
         return true;
+    }
+
+    public boolean isAvailable() {
+        return this.numRegisteredApplicants() < this.lecture().capacity() &&
+            LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).isBefore(this.startsAt());
     }
 }

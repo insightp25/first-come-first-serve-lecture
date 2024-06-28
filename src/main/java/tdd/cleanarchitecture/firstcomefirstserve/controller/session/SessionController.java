@@ -25,12 +25,12 @@ public class SessionController {
 
     @PostMapping("/{session_id}/application")
     public ResponseEntity<Session> application(
-        @PathVariable(value = "session_id") long lectureId,
+        @PathVariable(value = "session_id") long sessionId,
         @RequestParam(value = "user_id") long userId
     ) {
         return ResponseEntity
             .ok()
-            .body(sessionService.register(userId, lectureId));
+            .body(sessionService.register(userId, sessionId));
     }
 
     @GetMapping

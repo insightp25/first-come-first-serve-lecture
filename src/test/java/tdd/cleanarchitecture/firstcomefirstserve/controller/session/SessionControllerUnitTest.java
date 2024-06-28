@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -52,6 +53,7 @@ class SessionControllerUnitTest {
         mockMvc.perform(post("/sessions/{session_id}/application", 999L)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .param("user_id", String.valueOf(999L)))
+            .andDo(print())
             .andExpect(status().isOk());
     }
 
@@ -75,7 +77,8 @@ class SessionControllerUnitTest {
         given(sessionService.searchAllAvailable()).willReturn(sessions);
 
         // when & then
-        MvcResult mvcResult = mockMvc.perform(get("/sessions")
+        MvcResult mvcResult;
+        mvcResult = mockMvc.perform(get("/sessions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andReturn();
