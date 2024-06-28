@@ -13,30 +13,30 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.session.port.SessionApplicationHistoryRepository;
+import tdd.cleanarchitecture.firstcomefirstserve.domain.session.port.UserSessionRepository;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class SessionApplicationHistoryServiceImplUnitTest {
+public class UserSessionServiceImplUnitTest {
 
     @InjectMocks
-    SessionApplicationHistoryServiceImpl sessionApplicationHistoryServiceImpl;
+    UserUserSessionServiceImpl userSessionServiceImpl;
 
     @Mock
-    private SessionApplicationHistoryRepository sessionApplicationHistoryRepository;
+    private UserSessionRepository userSessionRepository;
 
     @Test
     public void 특정_유저의_특강_신청_결과_목록을_조회할_수_있다() {
         // given
-        given(sessionApplicationHistoryRepository.findByUserId(anyLong()))
-            .willReturn(new ArrayList<>(List.of(SessionApplicationHistory.builder().build())));
+        given(userSessionRepository.findByUserId(anyLong()))
+            .willReturn(new ArrayList<>(List.of(UserSession.builder().build())));
 
         // when
-        List<SessionApplicationHistory> result =
-            sessionApplicationHistoryServiceImpl.searchSessionApplicationHistory(99L);
+        List<UserSession> result =
+            userSessionServiceImpl.searchSessionApplicationHistory(99L);
 
         // then
         Assertions.assertThat(result)
-            .isEqualTo(new ArrayList<>(List.of(SessionApplicationHistory.builder().build())));
+            .isEqualTo(new ArrayList<>(List.of(UserSession.builder().build())));
     }
 }

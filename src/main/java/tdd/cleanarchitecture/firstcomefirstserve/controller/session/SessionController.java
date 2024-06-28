@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import tdd.cleanarchitecture.firstcomefirstserve.controller.session.port.SessionApplicationHistoryService;
+import tdd.cleanarchitecture.firstcomefirstserve.controller.session.port.UserSessionService;
 import tdd.cleanarchitecture.firstcomefirstserve.controller.session.port.SessionService;
 import tdd.cleanarchitecture.firstcomefirstserve.domain.session.Session;
-import tdd.cleanarchitecture.firstcomefirstserve.domain.session.SessionApplicationHistory;
+import tdd.cleanarchitecture.firstcomefirstserve.domain.session.UserSession;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class SessionController {
 
     private final SessionService sessionService;
 
-    private final SessionApplicationHistoryService sessionApplicationHistoryService;
+    private final UserSessionService userSessionService;
 
     @PostMapping("/{session_id}/application")
     public ResponseEntity<Session> application(
@@ -30,7 +30,7 @@ public class SessionController {
     ) {
         return ResponseEntity
             .ok()
-            .body(sessionService.apply(userId, lectureId));
+            .body(sessionService.register(userId, lectureId));
     }
 
     @GetMapping
@@ -41,11 +41,11 @@ public class SessionController {
     }
 
     @GetMapping("/application/{user_id}")
-    public ResponseEntity<List<SessionApplicationHistory>> registeredSessions(
+    public ResponseEntity<List<UserSession>> registeredSessions(
         @PathVariable(value = "user_id") long userId
     ) {
         return ResponseEntity
             .ok()
-            .body(sessionApplicationHistoryService.searchSessionApplicationHistory(userId));
+            .body(userSessionService.searchSessionApplicationHistory(userId));
     }
 }
