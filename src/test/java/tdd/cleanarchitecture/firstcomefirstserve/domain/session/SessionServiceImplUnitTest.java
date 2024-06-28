@@ -43,7 +43,7 @@ class SessionServiceImplUnitTest {
     @Test
     public void 특강이_신청기간_내이고_잔여_정원이_남아있을시_특정_유저가_수강신청을_하면_수강등록_후_강의정보를_반환한다() {
         // given
-        given(sessionRepository.findById(anyLong())).willReturn(Optional.of(Session.builder()
+        given(sessionRepository.findByIdLocked(anyLong())).willReturn(Optional.of(Session.builder()
             .numRegisteredApplicants(0)
             .startsAt(LocalDateTime.of(999999999, 6, 30, 23, 59, 59))
             .lecture(Lecture.builder()
@@ -62,7 +62,7 @@ class SessionServiceImplUnitTest {
     @Test
     public void 특강이_존재하지_않을시_특정_유저가_수강신청을_하면_오류를_반환한다() {
         // given
-        given(sessionRepository.findById(anyLong())).willReturn(Optional.empty());
+        given(sessionRepository.findByIdLocked(anyLong())).willReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> {
@@ -73,7 +73,7 @@ class SessionServiceImplUnitTest {
     @Test
     public void 특강의_신청기간이_지났을시_특정_유저가_수강신청을_하면_오류를_반환한다() {
         // given
-        given(sessionRepository.findById(anyLong())).willReturn(Optional.of(Session.builder()
+        given(sessionRepository.findByIdLocked(anyLong())).willReturn(Optional.of(Session.builder()
             .startsAt(LocalDateTime.of(-999999999, 1, 1, 0, 0, 0))
             .lecture(Lecture.builder().build())
             .build()));
@@ -87,7 +87,7 @@ class SessionServiceImplUnitTest {
     @Test
     public void 특강의_정원을_초과했을_시_특정_유저가_수강신청을_하면_오류를_반환한다() {
         // given
-        given(sessionRepository.findById(anyLong())).willReturn(Optional.of(Session.builder()
+        given(sessionRepository.findByIdLocked(anyLong())).willReturn(Optional.of(Session.builder()
             .numRegisteredApplicants(Integer.MAX_VALUE)
             .lecture(Lecture.builder()
                 .capacity(30).build())

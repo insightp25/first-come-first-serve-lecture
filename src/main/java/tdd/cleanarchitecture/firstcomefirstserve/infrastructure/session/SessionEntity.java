@@ -37,14 +37,7 @@ public class SessionEntity {
     @OneToMany(mappedBy = "sessionEntity")
     List<UserSessionEntity> userSessionEntities = new ArrayList<>();
 
-
     public static SessionEntity from(Session session) {
-        SessionEntity sessionEntity = new SessionEntity();
-        sessionEntity.id = session.id();
-        sessionEntity.startsAt = session.startsAt();
-        sessionEntity.numRegisteredApplicants = session.numRegisteredApplicants();
-        sessionEntity.createdAt = session.createdAt();
-
         LectureEntity innerLectureEntity = new LectureEntity();
         innerLectureEntity.id = session.lecture().id();
         innerLectureEntity.hostName = session.lecture().hostName();
@@ -53,6 +46,11 @@ public class SessionEntity {
         innerLectureEntity.capacity = session.lecture().capacity();
         innerLectureEntity.createdAt = session.lecture().createdAt();
 
+        SessionEntity sessionEntity = new SessionEntity();
+        sessionEntity.id = session.id();
+        sessionEntity.startsAt = session.startsAt();
+        sessionEntity.numRegisteredApplicants = session.numRegisteredApplicants();
+        sessionEntity.createdAt = session.createdAt();
         sessionEntity.lectureEntity = innerLectureEntity;
 
         return sessionEntity;

@@ -8,6 +8,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -17,10 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import tdd.cleanarchitecture.firstcomefirstserve.controller.session.SessionController;
 import tdd.cleanarchitecture.firstcomefirstserve.domain.session.Lecture;
 import tdd.cleanarchitecture.firstcomefirstserve.domain.session.Session;
 import tdd.cleanarchitecture.firstcomefirstserve.domain.session.UserSession;
@@ -36,7 +42,7 @@ import tdd.cleanarchitecture.firstcomefirstserve.infrastructure.session.LectureE
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class SessionIntegrationTest {
 
-    private static final int MAX_CAPACITY = 30;
+    private static final int MAX_CAPACITY_30 = 30;
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,6 +64,9 @@ public class SessionIntegrationTest {
 
     @Autowired
     private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    private SessionController sessionController;
 
     private TransactionStatus status;
 
@@ -82,7 +91,7 @@ public class SessionIntegrationTest {
             .hostName("John Doe")
             .title("Introduction to Spring Framework")
             .content("This is a special lecture introducing Spring Framework")
-            .capacity(MAX_CAPACITY)
+            .capacity(MAX_CAPACITY_30)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build())).toModel();
 
@@ -113,13 +122,13 @@ public class SessionIntegrationTest {
             .hostName("John Doe")
             .title("Introduction to Spring Framework")
             .content("This is a special lecture introducing Spring Framework")
-            .capacity(MAX_CAPACITY)
+            .capacity(MAX_CAPACITY_30)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build())).toModel();
 
         Session session = sessionRepository.save(Session.builder()
             .lecture(lecture1)
-            .numRegisteredApplicants(MAX_CAPACITY)
+            .numRegisteredApplicants(MAX_CAPACITY_30)
             .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
@@ -143,7 +152,7 @@ public class SessionIntegrationTest {
             .hostName("John Doe")
             .title("Introduction to Spring Framework")
             .content("This is a special lecture introducing Spring Framework")
-            .capacity(MAX_CAPACITY)
+            .capacity(MAX_CAPACITY_30)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build())).toModel();
 
@@ -173,7 +182,7 @@ public class SessionIntegrationTest {
             .hostName("John Doe")
             .title("Introduction to Spring Framework")
             .content("This is a special lecture introducing Spring Framework")
-            .capacity(MAX_CAPACITY)
+            .capacity(MAX_CAPACITY_30)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build())).toModel();
 
@@ -181,7 +190,7 @@ public class SessionIntegrationTest {
             .hostName("Foo Bar")
             .title("Introduction to FastAPI Framework")
             .content("This is a special lecture introducing FastAPI Framework")
-            .capacity(MAX_CAPACITY)
+            .capacity(MAX_CAPACITY_30)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build())).toModel();
 
@@ -194,7 +203,7 @@ public class SessionIntegrationTest {
 
         Session session2 = sessionRepository.save(Session.builder()
             .lecture(lecture2)
-            .numRegisteredApplicants(MAX_CAPACITY)
+            .numRegisteredApplicants(MAX_CAPACITY_30)
             .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
@@ -232,7 +241,7 @@ public class SessionIntegrationTest {
             .hostName("John Doe")
             .title("Introduction to Spring Framework")
             .content("This is a special lecture introducing Spring Framework")
-            .capacity(MAX_CAPACITY)
+            .capacity(MAX_CAPACITY_30)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build())).toModel();
 
@@ -240,7 +249,7 @@ public class SessionIntegrationTest {
             .hostName("Foo Bar")
             .title("Introduction to FastAPI Framework")
             .content("This is a special lecture introducing FastAPI Framework")
-            .capacity(MAX_CAPACITY)
+            .capacity(MAX_CAPACITY_30)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build())).toModel();
 
@@ -253,7 +262,7 @@ public class SessionIntegrationTest {
 
         Session session2 = sessionRepository.save(Session.builder()
             .lecture(lecture2)
-            .numRegisteredApplicants(MAX_CAPACITY)
+            .numRegisteredApplicants(MAX_CAPACITY_30)
             .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
             .build());
@@ -278,5 +287,146 @@ public class SessionIntegrationTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andReturn();
+    }
+
+    @Test
+    @DirtiesContext
+    public void 수강신청시_동시성_이슈를_다룰_수_있다() throws Exception {
+        // given
+        int numberOfParticipants = 50;
+        List<User> users = new ArrayList<>();
+
+        for (int i = 0; i < numberOfParticipants; i++) {
+            User user = userRepository.save(User.builder()
+                .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+                .build());
+            users.add(user);
+        }
+
+        Lecture lecture = lectureRepository.save(LectureEntity.from(Lecture.builder()
+            .hostName("John Doe")
+            .title("Introduction to Spring Framework")
+            .content("This is a special lecture introducing Spring Framework")
+            .capacity(MAX_CAPACITY_30)
+            .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+            .build())).toModel();
+
+        Session session = sessionRepository.save(Session.builder()
+            .lecture(lecture)
+            .numRegisteredApplicants(0)
+            .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
+            .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
+            .build());
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        // when
+        for (int i = 0; i < numberOfParticipants; i++) {
+            final long userId = users.get(i).id();
+
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                try {
+                    mockMvc.perform(post("/sessions/{session_id}/application", session.id())
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("user_id", String.valueOf(userId)))
+                        .andDo(print())
+                        .andExpect(status().isOk());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            futures.add(future);
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        // then
+        Session result = sessionRepository.findByIdLocked(session.id()).get();
+        Assertions.assertThat(result.numRegisteredApplicants()).isEqualTo(MAX_CAPACITY_30);
+    }
+
+    @Test
+    public void 수강신청시_동시성_이슈를_다룰_수_있다_2() throws Exception {
+        // given
+        int numberOfParticipants = 50;
+
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < numberOfParticipants; i++) {
+            User user = userRepository.save(User.builder()
+                .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+                .build());
+            users.add(user);
+        }
+
+        Lecture lecture = lectureRepository.save(LectureEntity.from(Lecture.builder()
+            .hostName("John Doe")
+            .title("Introduction to Spring Framework")
+            .content("This is a special lecture introducing Spring Framework")
+            .capacity(MAX_CAPACITY_30)
+            .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+            .build())).toModel();
+
+        Session session = sessionRepository.save(Session.builder()
+            .lecture(lecture)
+            .numRegisteredApplicants(0)
+            .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
+            .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
+            .build());
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        // when
+        for (int i = 0; i < numberOfParticipants; i++) {
+            final long userId = users.get(i).id();
+
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                try {
+                    mockMvc.perform(post("/sessions/{session_id}/application", session.id())
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .param("user_id", String.valueOf(userId)))
+                        .andDo(print())
+                        .andExpect(status().isOk());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            futures.add(future);
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        // then
+        Session result = sessionRepository.findByIdLocked(session.id()).orElseThrow();
+        Assertions.assertThat(result.numRegisteredApplicants()).isEqualTo(MAX_CAPACITY_30);
+    }
+
+
+    @Test
+    void simpleTest() throws Exception {
+        User user = userRepository.save(User.builder()
+            .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+            .build());
+
+        Lecture lecture = lectureRepository.save(LectureEntity.from(Lecture.builder()
+            .hostName("John Doe")
+            .title("Introduction to Spring Framework")
+            .content("This is a special lecture introducing Spring Framework")
+            .capacity(MAX_CAPACITY_30)
+            .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+            .build())).toModel();
+
+        Session session = sessionRepository.save(Session.builder()
+            .lecture(lecture)
+            .numRegisteredApplicants(0)
+            .startsAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).plusDays(3))
+            .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).minusDays(3))
+            .build());
+
+        mockMvc.perform(post("/sessions/{session_id}/application", session.id())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("user_id", String.valueOf(user.id())))
+            .andDo(print())
+            .andExpect(status().isOk());
+
     }
 }

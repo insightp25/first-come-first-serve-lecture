@@ -14,8 +14,8 @@ public class SessionRepositoryImpl implements SessionRepository {
     private final SessionJpaRepository sessionJpaRepository;
 
     @Override
-    public Optional<Session> findById(Long sessionId) {
-        return sessionJpaRepository.findById(sessionId).map(SessionEntity::toModel);
+    public Optional<Session> findByIdLocked(Long sessionId) {
+        return sessionJpaRepository.findByIdLocked(sessionId).map(SessionEntity::toModel);
     }
 
     @Override
