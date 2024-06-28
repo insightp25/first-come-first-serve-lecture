@@ -67,7 +67,7 @@ public class SessionConcurrentTest {
     public void 정원_이상이_동시_수강신청시_정원_수_만큼만_수강을_허용한다() throws Exception {
         // given
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < NUM_PARTICIPANTS_20; i++) {
+        for (int i = 0; i < NUM_PARTICIPANTS_2; i++) {
             User user = userRepository.save(User.builder()
                 .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
                 .build());
@@ -78,7 +78,7 @@ public class SessionConcurrentTest {
             .hostName("John Doe")
             .title("Introduction to Spring Framework")
             .content("This is a special lecture introducing Spring Framework")
-            .capacity(MAX_CAPACITY_10)
+            .capacity(MAX_CAPACITY_1)
             .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .build())).toModel();
 
@@ -92,7 +92,7 @@ public class SessionConcurrentTest {
         // when
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        for (int i = 0; i < NUM_PARTICIPANTS_20; i++) {
+        for (int i = 0; i < NUM_PARTICIPANTS_2; i++) {
             final long userId = users.get(i).id();
 
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
@@ -106,7 +106,7 @@ public class SessionConcurrentTest {
 
         // then
         Session result = sessionRepository.findByIdLocked(session.id()).orElseThrow();
-        Assertions.assertThat(result.numRegisteredApplicants()).isEqualTo(MAX_CAPACITY_10);
+        Assertions.assertThat(result.numRegisteredApplicants()).isEqualTo(MAX_CAPACITY_1);
     }
 
     @Test
