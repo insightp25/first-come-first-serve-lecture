@@ -21,6 +21,7 @@ public class SessionServiceImpl implements SessionService {
     private final UserSessionRepository userSessionRepository;
     private final UserRepository userRepository;
 
+    @Override
     public Session register(Long userId, Long sessionId) {
 
         Session session = sessionRepository.findByIdLocked(sessionId)
@@ -38,9 +39,20 @@ public class SessionServiceImpl implements SessionService {
         return sessionRepository.save(session.update());
     }
 
+    @Override
     public List<Session> searchAllAvailable() {
         return sessionRepository.getAll().stream()
             .filter(Session::isAvailable)
             .toList();
+    }
+
+    /**
+     * 동시성 테스트를 위한 테스트 전용 더미 메서드입니다.
+     */
+    @Override
+    @Deprecated
+    public Session findByIdLocked_ForTestPurposeOnly(Long sessionId) {
+        return sessionRepository.findByIdLocked(sessionId)
+            .orElseThrow(SessionNotFoundException::new);
     }
 }

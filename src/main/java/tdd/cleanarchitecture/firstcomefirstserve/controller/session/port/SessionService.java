@@ -8,4 +8,7 @@ public interface SessionService {
     public Session register(Long userId, Long sessionId);
 
     public List<Session> searchAllAvailable();
+
+    @Deprecated
+    public Session findByIdLocked_ForTestPurposeOnly(Long sessionId);
 }
